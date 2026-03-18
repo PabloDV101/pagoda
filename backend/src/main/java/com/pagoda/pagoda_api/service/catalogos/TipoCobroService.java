@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-import com.pagoda.pagoda_api.model.catalogos.TipoCobro;
+import com.pagoda.pagoda_api.entity.catalogos.TipoCobro;
 
 import com.pagoda.pagoda_api.repository.catalogos.TipoCobroRepository;
 

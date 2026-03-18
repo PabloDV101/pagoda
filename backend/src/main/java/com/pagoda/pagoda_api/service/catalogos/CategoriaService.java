@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.pagoda.pagoda_api.model.catalogos.Categoria;
+import com.pagoda.pagoda_api.entity.catalogos.Categoria;
 import com.pagoda.pagoda_api.repository.catalogos.CategoriaRepository;
 
 @Service

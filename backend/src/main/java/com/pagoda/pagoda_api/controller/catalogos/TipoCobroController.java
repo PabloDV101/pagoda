@@ -1,6 +1,6 @@
 package com.pagoda.pagoda_api.controller.catalogos;
 
-import com.pagoda.pagoda_api.model.catalogos.TipoCobro;
+import com.pagoda.pagoda_api.entity.catalogos.TipoCobro;
 import com.pagoda.pagoda_api.service.catalogos.TipoCobroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

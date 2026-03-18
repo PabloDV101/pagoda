@@ -3,7 +3,7 @@ package com.pagoda.pagoda_api.service.catalogos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.pagoda.pagoda_api.model.catalogos.EstadoMesa;
+import com.pagoda.pagoda_api.entity.catalogos.EstadoMesa;
 import com.pagoda.pagoda_api.repository.catalogos.EstadoMesaRepository;
 
 import java.util.List;

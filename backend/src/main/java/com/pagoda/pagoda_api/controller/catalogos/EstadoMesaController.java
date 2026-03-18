@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.pagoda.pagoda_api.model.catalogos.EstadoMesa;
+import com.pagoda.pagoda_api.entity.catalogos.EstadoMesa;
 import com.pagoda.pagoda_api.service.catalogos.EstadoMesaService;
 
 import java.util.List;

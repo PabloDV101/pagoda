@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.pagoda.pagoda_api.model.catalogos.MetodoPago;
+import com.pagoda.pagoda_api.entity.catalogos.MetodoPago;
 import com.pagoda.pagoda_api.service.catalogos.MetodoPagoService;
 
 import java.util.List;
