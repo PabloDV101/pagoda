@@ -2,15 +2,11 @@ package com.pagoda.pagoda_api.controller.catalogos;
 
 import java.util.List;
 
+import com.pagoda.pagoda_api.dto.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.pagoda.pagoda_api.entity.catalogos.Rol;
 import com.pagoda.pagoda_api.service.catalogos.RolService;
@@ -23,25 +19,47 @@ public class RolController {
     private RolService rolService;
 
     @GetMapping
-    public List<Rol> listar() {
-        return rolService.listarTodos();
+    public ResponseEntity<ApiResponse<List<Rol>>> listar() {
+        return ApiResponse.success("Lista de roles obtenida", rolService.listarTodos());
     }
-
     @PostMapping
-    public Rol crear(@RequestBody Rol rol) {
-        return rolService.guardar(rol);
+    public ResponseEntity<ApiResponse<Rol>> crear(@RequestBody Rol rol) {
+        Rol guardado = rolService.guardar(rol);
+        // Usamos HttpStatus.CREATED (201) para ser semánticamente correctos
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Rol creado con éxito", guardado).getBody());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Rol> obtenerPorId(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<Rol>> obtenerPorId(@PathVariable Integer id) {
+        // Usamos Optional (si tu Service lo devuelve) para manejar el error 404
         return rolService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .map(rol -> ApiResponse.success("Rol encontrado", rol))
+                .orElse(ApiResponse.error("No se encontró el rol con ID: " + id, HttpStatus.NOT_FOUND));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<Rol>> actualizar(@PathVariable Integer id, @RequestBody Rol detalles) {
+        return rolService.buscarPorId(id)
+                .map(rol -> {
+
+                    rol.setNombre(detalles.getNombre());
+                    rol.setDescripcion(detalles.getDescripcion());
+                    // Si tienes campo descripción, también lo actualizamos
+                    // metodoExistente.setDescripcion(detalles.getDescripcion());
+
+                    Rol actualizado = rolService.guardar(rol);
+                    return ApiResponse.success("Rol actualizado correctamente", actualizado);
+                })
+                .orElse(ApiResponse.error("No se puede actualizar: El rol con ID " + id + " no existe", HttpStatus.NOT_FOUND));
+    }
+
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
+        // Aquí podrías validar si el rol existe antes de borrar,
+        // pero por ahora mantengámoslo simple:
         rolService.eliminar(id);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.success("Rol eliminado correctamente", null);
     }
 }

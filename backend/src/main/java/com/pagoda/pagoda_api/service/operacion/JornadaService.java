@@ -15,6 +15,7 @@ public class JornadaService {
     private JornadaRepository jornadaRepository;
 
     public List<Jornada> listarTodas() {
+
         return jornadaRepository.findAll();
     }
 
@@ -24,6 +25,9 @@ public class JornadaService {
             throw new RuntimeException("Ya existe una jornada abierta. Debe cerrarla primero.");
         }
         return jornadaRepository.save(jornada);
+    }
+    public Optional<Jornada> obtenerJornadaAbierta() {
+        return jornadaRepository.findByRealizadaFalse();
     }
 
     public Jornada cerrarJornada(Integer id, String tipoCierre, Integer usuarioCierreId) {
@@ -35,4 +39,5 @@ public class JornadaService {
             return jornadaRepository.save(j);
         }).orElseThrow(() -> new RuntimeException("Jornada no encontrada"));
     }
+
 }

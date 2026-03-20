@@ -29,4 +29,13 @@ public class MesaService {
     public void eliminar(Integer id) {
         mesaRepository.deleteById(id);
     }
+    public void desactivar(Integer id) {
+        mesaRepository.findById(id).ifPresent(m -> {
+            // Aquí asumimos que tienes un campo 'activo' en tu entidad Mesa.
+            // Si no lo tienes, puedes simplemente usar mesaRepository.deleteById(id);
+            // Pero lo ideal es:
+            m.setActivo(false);
+            mesaRepository.save(m);
+        });
+    }
 }

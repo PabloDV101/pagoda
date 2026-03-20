@@ -1,5 +1,6 @@
 package com.pagoda.pagoda_api.service.operacion;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import com.pagoda.pagoda_api.entity.operacion.Producto;
 import com.pagoda.pagoda_api.repository.operacion.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,9 @@ public class ProductoService {
             p.setActivo(false);
             productoRepository.save(p);
         });
+    }
+
+    public Optional<Producto> buscarPorId(Integer id) {
+        return productoRepository.findById(id);
     }
 }

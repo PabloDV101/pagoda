@@ -38,4 +38,8 @@ public class Mesa {
     @ManyToOne
     @JoinColumn(name = "estado_id", nullable = false)
     private EstadoMesa estado;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean activo;
 }

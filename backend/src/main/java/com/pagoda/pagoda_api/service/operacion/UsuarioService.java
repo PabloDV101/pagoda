@@ -36,4 +36,10 @@ public class UsuarioService {
             usuarioRepository.save(usuario);
         });
     }
+    public void desactivar(Integer id) {
+        usuarioRepository.findById(id).ifPresent(u -> {
+            u.setActivo(false);
+            usuarioRepository.save(u);
+        });
+    }
 }
