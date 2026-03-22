@@ -7,4 +7,5 @@ import com.pagoda.pagoda_api.entity.catalogos.EstadoMesa;
 
 @Repository
 public interface EstadoMesaRepository extends JpaRepository<EstadoMesa, Integer> {
+    boolean existsByNombre(String nombre);
 }

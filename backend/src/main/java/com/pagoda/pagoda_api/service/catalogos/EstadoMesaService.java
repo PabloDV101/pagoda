@@ -1,5 +1,7 @@
 package com.pagoda.pagoda_api.service.catalogos;
 
+import com.pagoda.pagoda_api.exception.BusinessException;
+import com.pagoda.pagoda_api.exception.ErrorCodigo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,23 +13,28 @@ import java.util.Optional;
 
 @Service
 public class EstadoMesaService {
+    @Autowired private EstadoMesaRepository repository;
 
-    @Autowired
-    private EstadoMesaRepository estadoMesaRepository;
+    public List<EstadoMesa> listarTodos() { return repository.findAll(); }
 
-    public List<EstadoMesa> listarTodos() {
-        return estadoMesaRepository.findAll();
+    public EstadoMesa buscarPorId(Integer id) {
+        return repository.findById(id).orElseThrow(() -> new BusinessException(ErrorCodigo.ESTADO_MESA_NO_ENCONTRADO));
     }
 
-    public Optional<EstadoMesa> buscarPorId(Integer id) {
-        return estadoMesaRepository.findById(id);
-    }
-
-    public EstadoMesa guardar(EstadoMesa estado) {
-        return estadoMesaRepository.save(estado);
+    public EstadoMesa guardar(EstadoMesa entidad) {
+        if (entidad.getId() == null && repository.existsByNombre(entidad.getNombre())) {
+            throw new BusinessException(ErrorCodigo.NOMBRE_ESTADO_MESA_DUPLICADO);
+        }
+        return repository.save(entidad);
     }
 
     public void eliminar(Integer id) {
-        estadoMesaRepository.deleteById(id);
+        EstadoMesa entidad = buscarPorId(id);
+        try {
+            repository.delete(entidad);
+            repository.flush();
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodigo.ESTADO_MESA_EN_USO);
+        }
     }
 }

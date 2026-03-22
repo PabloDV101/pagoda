@@ -1,6 +1,8 @@
 package com.pagoda.pagoda_api.service.operacion;
 
 import com.pagoda.pagoda_api.entity.operacion.Jornada;
+import com.pagoda.pagoda_api.exception.BusinessException;
+import com.pagoda.pagoda_api.exception.ErrorCodigo;
 import com.pagoda.pagoda_api.repository.operacion.JornadaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,34 +12,37 @@ import java.util.Optional;
 
 @Service
 public class JornadaService {
-
-    @Autowired
-    private JornadaRepository jornadaRepository;
-
-    public List<Jornada> listarTodas() {
-
-        return jornadaRepository.findAll();
-    }
+    @Autowired private JornadaRepository repository;
 
     public Jornada abrirJornada(Jornada jornada) {
-        // Validar si ya hay una jornada abierta
-        if (jornadaRepository.findByRealizadaFalse().isPresent()) {
-            throw new RuntimeException("Ya existe una jornada abierta. Debe cerrarla primero.");
+        // REGLA: Solo una jornada abierta a la vez
+        if (repository.findByRealizadaFalse().isPresent()) {
+            throw new BusinessException(ErrorCodigo.JORNADA_YA_ABIERTA);
         }
-        return jornadaRepository.save(jornada);
+        jornada.setRealizada(false);
+        jornada.setHoraApertura(LocalDateTime.now());
+        return repository.save(jornada);
     }
+
+    public Jornada cerrarJornada(Integer id) {
+        Jornada jornada = repository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCodigo.JORNADA_NO_ENCONTRADA));
+
+        if (jornada.getRealizada()) {
+            throw new BusinessException(ErrorCodigo.JORNADA_CERRADA);
+        }
+
+        jornada.setRealizada(true);
+        jornada.setHoraCierre(LocalDateTime.now());
+        return repository.save(jornada);
+    }
+
+    public List<Jornada> listarTodas() {
+        return repository.findAll();
+    }
+
+
     public Optional<Jornada> obtenerJornadaAbierta() {
-        return jornadaRepository.findByRealizadaFalse();
+        return repository.findByRealizadaFalse();
     }
-
-    public Jornada cerrarJornada(Integer id, String tipoCierre, Integer usuarioCierreId) {
-        return jornadaRepository.findById(id).map(j -> {
-            j.setHoraCierre(LocalDateTime.now());
-            j.setRealizada(true);
-            j.setTipoCierre(tipoCierre);
-            // Aquí podrías buscar el usuario y setearlo
-            return jornadaRepository.save(j);
-        }).orElseThrow(() -> new RuntimeException("Jornada no encontrada"));
-    }
-
 }

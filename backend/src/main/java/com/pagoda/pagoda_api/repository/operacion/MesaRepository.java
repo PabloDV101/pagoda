@@ -9,4 +9,6 @@ import java.util.List;
 public interface MesaRepository extends JpaRepository<Mesa, Integer> {
     // Método útil para filtrar mesas por su estado (ej: buscar todas las 'Disponibles')
     List<Mesa> findByEstadoId(Integer estadoId);
+
+    boolean existsByNumero(Integer numero);
 }

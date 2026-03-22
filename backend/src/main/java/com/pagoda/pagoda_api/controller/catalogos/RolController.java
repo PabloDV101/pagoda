@@ -32,26 +32,21 @@ public class RolController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Rol>> obtenerPorId(@PathVariable Integer id) {
-        // Usamos Optional (si tu Service lo devuelve) para manejar el error 404
-        return rolService.buscarPorId(id)
-                .map(rol -> ApiResponse.success("Rol encontrado", rol))
-                .orElse(ApiResponse.error("No se encontró el rol con ID: " + id, HttpStatus.NOT_FOUND));
+        // Si el service no lo encuentra, el GlobalExceptionHandler atrapará el error
+        Rol rol = rolService.buscarPorId(id);
+        return ApiResponse.success("Rol encontrado", rol);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Rol>> actualizar(@PathVariable Integer id, @RequestBody Rol detalles) {
-        return rolService.buscarPorId(id)
-                .map(rol -> {
+        // El service lanzará ROL_NO_ENCONTRADO si el ID no existe
+        Rol existente = rolService.buscarPorId(id);
 
-                    rol.setNombre(detalles.getNombre());
-                    rol.setDescripcion(detalles.getDescripcion());
-                    // Si tienes campo descripción, también lo actualizamos
-                    // metodoExistente.setDescripcion(detalles.getDescripcion());
+        existente.setNombre(detalles.getNombre());
+        existente.setDescripcion(detalles.getDescripcion());
 
-                    Rol actualizado = rolService.guardar(rol);
-                    return ApiResponse.success("Rol actualizado correctamente", actualizado);
-                })
-                .orElse(ApiResponse.error("No se puede actualizar: El rol con ID " + id + " no existe", HttpStatus.NOT_FOUND));
+        Rol actualizado = rolService.guardar(existente);
+        return ApiResponse.success("Rol actualizado correctamente", actualizado);
     }
 
 

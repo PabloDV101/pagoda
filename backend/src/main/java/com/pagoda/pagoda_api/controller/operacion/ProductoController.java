@@ -31,36 +31,22 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Producto>> obtenerPorId(@PathVariable Integer id) {
-        return productoService.buscarPorId(id)
-                .map(p -> ApiResponse.success("Producto encontrado", p))
-                .orElse(ApiResponse.error("No se encontró el producto con ID: " + id, HttpStatus.NOT_FOUND));
+    public ResponseEntity<ApiResponse<Producto>> obtener(@PathVariable Integer id) {
+        return ApiResponse.success("Usuario encontrado", productoService.buscarPorId(id));
     }
 
-
-//    @PutMapping("/{id}")
-//    public ResponseEntity<ApiResponse<Producto>> actualizar(@PathVariable Integer id, @RequestBody Producto detalles) {
-//
-//        detalles.setId(id);
-//        Producto productoActualizado = productoService.guardar(detalles);
-//
-//
-//        return ApiResponse.success("Creado", productoActualizado);
-//    }
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Producto>> actualizar(@PathVariable Integer id, @RequestBody Producto detalles) {
-        return productoService.buscarPorId(id)
-                .map(existente -> {
-                    detalles.setId(id);
-                    Producto actualizado = productoService.guardar(detalles);
-                    return ApiResponse.success("Producto actualizado correctamente", actualizado);
-                })
-                .orElse(ApiResponse.error("No se puede actualizar: El producto con ID " + id + " no existe", HttpStatus.NOT_FOUND));
-    }
+@PutMapping("/{id}")
+public ResponseEntity<ApiResponse<Producto>> actualizar(@PathVariable Integer id, @RequestBody Producto d) {
+    Producto ex = productoService.buscarPorId(id);
+    ex.setNombre(d.getNombre());
+    ex.setPrecio(d.getPrecio());
+    ex.setCategoria(d.getCategoria());
+    return ApiResponse.success("Producto actualizado", productoService.guardar(ex));
+}
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
-        productoService.desactivar(id);
-        return ApiResponse.success("Producto desactivado correctamente", null);
+        productoService.eliminar(id);
+        return ApiResponse.success("Producto eliminado/desactivado", null);
     }
 }

@@ -3,7 +3,6 @@ package com.pagoda.pagoda_api.controller.catalogos;
 import java.util.List;
 
 import com.pagoda.pagoda_api.dto.ApiResponse;
-import com.pagoda.pagoda_api.entity.catalogos.Rol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,51 +26,37 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
-    // Obtener todas las categorías
     @GetMapping
     public ResponseEntity<ApiResponse<List<Categoria>>> listar() {
         return ApiResponse.success("Lista de categorías obtenida", categoriaService.listarTodas());
     }
 
-//Buscar por id
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Categoria>> obtenerPorId(@PathVariable Integer id) {
-        // Usamos Optional (si tu Service lo devuelve) para manejar el error 404
-        return categoriaService.buscarPorId(id)
-                .map(categoria -> ApiResponse.success("Categoría encontrada", categoria))
-                .orElse(ApiResponse.error("No se encontró la categoría con ID: " + id, HttpStatus.NOT_FOUND));
+        return ApiResponse.success("Categoría encontrada", categoriaService.buscarPorId(id));
     }
 
-    // Crear una nueva categoría
     @PostMapping
-    public ResponseEntity<ApiResponse<Categoria>>crear(@RequestBody Categoria categoria) {
+    public ResponseEntity<ApiResponse<Categoria>> crear(@RequestBody Categoria categoria) {
         Categoria guardada = categoriaService.guardar(categoria);
-
-
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Categoría creada con éxito", guardada).getBody());
     }
 
-    // Actualizar una categoría existente
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Categoria>> actualizar(@PathVariable Integer id, @RequestBody Categoria detalles) {
-        return categoriaService.buscarPorId(id)
-                .map(categoriaExistente -> {
-                    categoriaExistente.setNombre(detalles.getNombre());
-                    categoriaExistente.setDescripcion(detalles.getDescripcion());
+        // El service lanza error si no existe
+        Categoria existente = categoriaService.buscarPorId(id);
 
-                    Categoria actualizada = categoriaService.guardar(categoriaExistente);
+        existente.setNombre(detalles.getNombre());
+        existente.setDescripcion(detalles.getDescripcion());
 
-                    return ApiResponse.success("Categoría actualizada correctamente", actualizada);
-                })
-                .orElse(ApiResponse.error("No se puede actualizar: La categoría con ID " + id + " no existe", HttpStatus.NOT_FOUND));
+        Categoria actualizada = categoriaService.guardar(existente);
+        return ApiResponse.success("Categoría actualizada correctamente", actualizada);
     }
 
-    // Eliminar una categoría
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
-        // Aquí podrías validar si el rol existe antes de borrar,
-        // pero por ahora mantengámoslo simple:
         categoriaService.eliminar(id);
         return ApiResponse.success("Categoría eliminada correctamente", null);
     }

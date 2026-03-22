@@ -7,4 +7,5 @@ import com.pagoda.pagoda_api.entity.catalogos.Rol;
 
 @Repository
 public interface RolRepository extends JpaRepository<Rol, Integer> {
+    boolean existsByNombre(String nombre);
 }

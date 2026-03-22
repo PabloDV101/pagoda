@@ -23,10 +23,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Usuario>> obtenerPorId(@PathVariable Integer id) {
-        return usuarioService.buscarPorId(id)
-                .map(u -> ApiResponse.success("Usuario encontrado", u))
-                .orElse(ApiResponse.error("No se encontró el usuario con ID: " + id, HttpStatus.NOT_FOUND));
+    public ResponseEntity<ApiResponse<Usuario>> obtener(@PathVariable Integer id) {
+        return ApiResponse.success("Usuario encontrado", usuarioService.buscarPorId(id));
     }
 
     @PostMapping
@@ -37,27 +35,16 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Usuario>> actualizar(@PathVariable Integer id, @RequestBody Usuario detalles) {
-        return usuarioService.buscarPorId(id)
-                .map(usuarioExistente -> {
-                    usuarioExistente.setNombre(detalles.getNombre());
-                    usuarioExistente.setRol(detalles.getRol());
-                    usuarioExistente.setActivo(detalles.getActivo());
-
-                    // Solo actualizamos el PIN si el front envía uno nuevo
-                    if (detalles.getPinHash() != null && !detalles.getPinHash().isEmpty()) {
-                        usuarioExistente.setPinHash(detalles.getPinHash());
-                    }
-
-                    Usuario actualizado = usuarioService.guardar(usuarioExistente);
-                    return ApiResponse.success("Usuario actualizado correctamente", actualizado);
-                })
-                .orElse(ApiResponse.error("No se puede actualizar: El usuario con ID " + id + " no existe", HttpStatus.NOT_FOUND));
+    public ResponseEntity<ApiResponse<Usuario>> actualizar(@PathVariable Integer id, @RequestBody Usuario d) {
+        Usuario ex = usuarioService.buscarPorId(id);
+        ex.setNombre(d.getNombre());
+        ex.setRol(d.getRol());
+        if (d.getPinHash() != null) ex.setPinHash(d.getPinHash());
+        return ApiResponse.success("Usuario actualizado", usuarioService.guardar(ex));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
-        // Hacemos un borrado lógico (desactivar)
         usuarioService.desactivar(id);
         return ApiResponse.success("Usuario desactivado correctamente", null);
     }

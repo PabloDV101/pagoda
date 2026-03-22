@@ -13,4 +13,6 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
 
     // Para filtrar por categoría (ej: "Solo Bebidas")
     List<Producto> findByCategoriaIdAndActivoTrue(Integer categoriaId);
+
+    boolean existsByNombre(String nombre);
 }

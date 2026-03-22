@@ -1,5 +1,6 @@
 /home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/Application.java
 /home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/controller/catalogos/CategoriaController.java
+/home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/controller/catalogos/EstadoItemController.java
 /home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/controller/catalogos/EstadoMesaController.java
 /home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/controller/catalogos/MetodoPagoController.java
 /home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/controller/catalogos/RolController.java
@@ -8,6 +9,7 @@
 /home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/controller/operacion/MesaController.java
 /home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/controller/operacion/ProductoController.java
 /home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/controller/operacion/UsuarioController.java
+/home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/dto/ApiResponse.java
 /home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/entity/catalogos/Categoria.java
 /home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/entity/catalogos/EstadoItem.java
 /home/pablodev/pagoda/backend/src/main/java/com/pagoda/pagoda_api/entity/catalogos/EstadoMesa.java

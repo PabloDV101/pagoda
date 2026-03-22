@@ -23,4 +23,6 @@ public class EstadoItem {
 
     @Column(nullable = false, length = 50)
     private String nombre;
+
+
 }

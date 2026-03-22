@@ -9,4 +9,5 @@ import com.pagoda.pagoda_api.entity.catalogos.Categoria;
 public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
     // Aquí podrías añadir búsquedas personalizadas en el futuro, por ejemplo:
     // List<Categoria> findByNombreContainingIgnoreCase(String nombre);
+    boolean existsByNombre(String nombre);
 }

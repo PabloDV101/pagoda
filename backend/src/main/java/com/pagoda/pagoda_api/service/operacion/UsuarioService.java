@@ -1,6 +1,8 @@
 package com.pagoda.pagoda_api.service.operacion;
 
 import com.pagoda.pagoda_api.entity.operacion.Usuario;
+import com.pagoda.pagoda_api.exception.BusinessException;
+import com.pagoda.pagoda_api.exception.ErrorCodigo;
 import com.pagoda.pagoda_api.repository.operacion.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,35 +13,24 @@ import java.util.Optional;
 
 @Service
 public class UsuarioService {
+    @Autowired private UsuarioRepository repository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    public List<Usuario> listarTodos() { return repository.findAll(); }
 
-    public List<Usuario> listarTodos() {
-        return usuarioRepository.findAll();
-    }
-
-    public Optional<Usuario> buscarPorId(Integer id) {
-        return usuarioRepository.findById(id);
+    public Usuario buscarPorId(Integer id) {
+        return repository.findById(id).orElseThrow(() -> new BusinessException(ErrorCodigo.USUARIO_NO_ENCONTRADO));
     }
 
     public Usuario guardar(Usuario usuario) {
-        if (usuario.getFechaCreacion() == null) {
-            usuario.setFechaCreacion(LocalDateTime.now());
+        if (usuario.getId() == null && repository.existsByNombre(usuario.getNombre())) {
+            throw new BusinessException(ErrorCodigo.NOMBRE_USUARIO_DUPLICADO);
         }
-        return usuarioRepository.save(usuario);
+        return repository.save(usuario);
     }
 
-    public void eliminarLogica(Integer id) {
-        usuarioRepository.findById(id).ifPresent(usuario -> {
-            usuario.setActivo(false);
-            usuarioRepository.save(usuario);
-        });
-    }
     public void desactivar(Integer id) {
-        usuarioRepository.findById(id).ifPresent(u -> {
-            u.setActivo(false);
-            usuarioRepository.save(u);
-        });
+        Usuario usuario = buscarPorId(id);
+        usuario.setActivo(false);
+        repository.save(usuario);
     }
 }

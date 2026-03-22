@@ -39,7 +39,10 @@ public class Mesa {
     @JoinColumn(name = "estado_id", nullable = false)
     private EstadoMesa estado;
 
-    @Builder.Default
     @Column(nullable = false)
-    private Boolean activo;
+    private boolean activo;
+
+    public boolean getActivo() {
+        return activo;
+    }
 }

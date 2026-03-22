@@ -24,27 +24,13 @@ public class JornadaController {
 
     @PostMapping("/abrir")
     public ResponseEntity<ApiResponse<Jornada>> abrir(@RequestBody Jornada jornada) {
-        try {
-            Jornada abierta = jornadaService.abrirJornada(jornada);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(ApiResponse.success("Jornada abierta con éxito", abierta).getBody());
-        } catch (RuntimeException e) {
-            // Aquí capturamos el error si ya hay una jornada abierta
-            return ApiResponse.error(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Jornada abierta correctamente", jornadaService.abrirJornada(jornada)).getBody());
     }
 
     @PutMapping("/cerrar/{id}")
-    public ResponseEntity<ApiResponse<Jornada>> cerrar(
-            @PathVariable Integer id,
-            @RequestParam String tipo,
-            @RequestParam Integer usuarioCierreId) {
-        try {
-            Jornada cerrada = jornadaService.cerrarJornada(id, tipo, usuarioCierreId);
-            return ApiResponse.success("Jornada cerrada correctamente", cerrada);
-        } catch (RuntimeException e) {
-            return ApiResponse.error(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ApiResponse<Jornada>> cerrar(@PathVariable Integer id) {
+        return ApiResponse.success("Jornada cerrada correctamente", jornadaService.cerrarJornada(id));
     }
 
     @GetMapping("/estado")

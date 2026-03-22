@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository;
 import com.pagoda.pagoda_api.entity.catalogos.EstadoItem;
 
 @Repository
-public interface EstadoItemRepository extends JpaRepository<EstadoItem, Integer> {}
+public interface EstadoItemRepository extends JpaRepository<EstadoItem, Integer> {
+    boolean existsByNombre(String nombre);
+}

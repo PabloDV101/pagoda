@@ -1,5 +1,7 @@
 package com.pagoda.pagoda_api.service.catalogos;
 
+import com.pagoda.pagoda_api.exception.BusinessException;
+import com.pagoda.pagoda_api.exception.ErrorCodigo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,23 +15,28 @@ import java.util.Optional;
 
 @Service
 public class MetodoPagoService {
+    @Autowired private MetodoPagoRepository repository;
 
-    @Autowired
-    private MetodoPagoRepository metodoPagoRepository;
+    public List<MetodoPago> listarTodos() { return repository.findAll(); }
 
-    public List<MetodoPago> listarTodos() {
-        return metodoPagoRepository.findAll();
+    public MetodoPago buscarPorId(Integer id) {
+        return repository.findById(id).orElseThrow(() -> new BusinessException(ErrorCodigo.METODO_PAGO_NO_ENCONTRADO));
     }
 
-    public Optional<MetodoPago> buscarPorId(Integer id) {
-        return metodoPagoRepository.findById(id);
-    }
-
-    public MetodoPago guardar(MetodoPago metodo) {
-        return metodoPagoRepository.save(metodo);
+    public MetodoPago guardar(MetodoPago entidad) {
+        if (entidad.getId() == null && repository.existsByNombre(entidad.getNombre())) {
+            throw new BusinessException(ErrorCodigo.NOMBRE_METODO_PAGO_DUPLICADO);
+        }
+        return repository.save(entidad);
     }
 
     public void eliminar(Integer id) {
-        metodoPagoRepository.deleteById(id);
+        MetodoPago entidad = buscarPorId(id);
+        try {
+            repository.delete(entidad);
+            repository.flush();
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodigo.METODO_PAGO_EN_USO);
+        }
     }
 }

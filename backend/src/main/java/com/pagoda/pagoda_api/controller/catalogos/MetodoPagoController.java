@@ -15,50 +15,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/catalogos/metodos-pago")
 public class MetodoPagoController {
+    @Autowired private MetodoPagoService service;
 
-    @Autowired
-    private MetodoPagoService service;
-
-
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<MetodoPago>>> listar() {
-        return ApiResponse.success("Lista de metodos de pago obtenida", service.listarTodos());
+    @GetMapping public ResponseEntity<ApiResponse<List<MetodoPago>>> listar() {
+        return ApiResponse.success("Lista obtenida", service.listarTodos());
     }
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<MetodoPago>> crear(@RequestBody MetodoPago metodoPago) {
-        MetodoPago guardado = service.guardar(metodoPago);
-        // Usamos HttpStatus.CREATED (201) para ser semánticamente correctos
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Metodo de pago creado con éxito", guardado).getBody());
+    @PostMapping public ResponseEntity<ApiResponse<MetodoPago>> crear(@RequestBody MetodoPago e) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Creado", service.guardar(e)).getBody());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<MetodoPago>> obtenerPorId(@PathVariable Integer id) {
-        // Usamos Optional (si tu Service lo devuelve) para manejar el error 404
-        return service.buscarPorId(id)
-                .map(metodoPago -> ApiResponse.success("Metodo de pago encontrado", metodoPago))
-                .orElse(ApiResponse.error("No se encontró el metodo de pago con ID: " + id, HttpStatus.NOT_FOUND));
-    }
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<MetodoPago>> actualizar(@PathVariable Integer id, @RequestBody MetodoPago detalles) {
-        return service.buscarPorId(id)
-                .map(metodoExistente -> {
-                    // Actualizamos los campos (ej. de "Efectivo" a "Efectivo MXN")
-                    metodoExistente.setNombre(detalles.getNombre());
-                    // Si tienes campo descripción, también lo actualizamos
-                    // metodoExistente.setDescripcion(detalles.getDescripcion());
-
-                    MetodoPago actualizado = service.guardar(metodoExistente);
-                    return ApiResponse.success("Método de pago actualizado correctamente", actualizado);
-                })
-                .orElse(ApiResponse.error("No se puede actualizar: El método de pago con ID " + id + " no existe", HttpStatus.NOT_FOUND));
+    @PutMapping("/{id}") public ResponseEntity<ApiResponse<MetodoPago>> actualizar(@PathVariable Integer id, @RequestBody MetodoPago d) {
+        MetodoPago ex = service.buscarPorId(id);
+        ex.setNombre(d.getNombre());
+        return ApiResponse.success("Actualizado", service.guardar(ex));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
-
+    @DeleteMapping("/{id}") public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
         service.eliminar(id);
-        return ApiResponse.success("Metodo de pago eliminado correctamente", null);
+        return ApiResponse.success("Eliminado", null);
     }
 }

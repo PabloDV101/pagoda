@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     // Útil para validar que no existan nombres duplicados o para el login
     Optional<Usuario> findByNombre(String nombre);
+
+    boolean existsByNombre(String nombre);
 }

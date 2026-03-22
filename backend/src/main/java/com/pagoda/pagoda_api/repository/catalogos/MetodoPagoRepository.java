@@ -7,6 +7,7 @@ import com.pagoda.pagoda_api.entity.catalogos.MetodoPago;
 
 @Repository
 public interface MetodoPagoRepository extends JpaRepository<MetodoPago, Integer> {
+    boolean existsByNombre(String nombre);
     // Aquí podrías añadir búsquedas personalizadas en el futuro, por ejemplo:
     // List<MetodoPago> findByNombreContainingIgnoreCase(String nombre);
 }

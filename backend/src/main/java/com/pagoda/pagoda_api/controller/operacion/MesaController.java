@@ -23,38 +23,33 @@ public class MesaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Mesa>> obtenerPorId(@PathVariable Integer id) {
-        return mesaService.buscarPorId(id)
-                .map(m -> ApiResponse.success("Mesa encontrada", m))
-                .orElse(ApiResponse.error("No se encontró la mesa con ID: " + id, HttpStatus.NOT_FOUND));
+    public ResponseEntity<ApiResponse<Mesa>> obtener(@PathVariable Integer id) {
+        return ApiResponse.success("Mesa encontrada", mesaService.buscarPorId(id));
     }
 
     @PostMapping
     public ResponseEntity<ApiResponse<Mesa>> crear(@RequestBody Mesa mesa) {
-        Mesa guardada = mesaService.guardar(mesa);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Mesa creada con éxito", guardada).getBody());
+                .body(ApiResponse.success("Mesa creada", mesaService.guardar(mesa)).getBody());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Mesa>> actualizar(@PathVariable Integer id, @RequestBody Mesa detalles) {
-        return mesaService.buscarPorId(id)
-                .map(mesaExistente -> {
-                    mesaExistente.setNumero(detalles.getNumero());
-                    mesaExistente.setCapacidad(detalles.getCapacidad());
-                    mesaExistente.setEstado(detalles.getEstado());
-                    // Si agregaste el campo activo:
-                    mesaExistente.setActivo(detalles.getActivo());
+        // El service lanza MESA_NO_ENCONTRADA si el ID no existe
+        Mesa existente = mesaService.buscarPorId(id);
 
-                    Mesa actualizada = mesaService.guardar(mesaExistente);
-                    return ApiResponse.success("Mesa actualizada correctamente", actualizada);
-                })
-                .orElse(ApiResponse.error("No se puede actualizar: La mesa con ID " + id + " no existe", HttpStatus.NOT_FOUND));
+        existente.setNumero(detalles.getNumero());
+        existente.setCapacidad(detalles.getCapacidad());
+        existente.setEstado(detalles.getEstado());
+        existente.setActivo(detalles.getActivo());
+
+        Mesa actualizada = mesaService.guardar(existente);
+        return ApiResponse.success("Mesa actualizada correctamente", actualizada);
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
         mesaService.desactivar(id);
         return ApiResponse.success("Mesa desactivada correctamente", null);
     }
+
 }

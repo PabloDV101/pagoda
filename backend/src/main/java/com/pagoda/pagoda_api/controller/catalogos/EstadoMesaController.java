@@ -16,45 +16,28 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/catalogos/estados-mesa")
 public class EstadoMesaController {
+    @Autowired private EstadoMesaService service;
 
-    @Autowired
-    private EstadoMesaService estadoMesaService;
-
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<EstadoMesa>>> listar() {
-        return ApiResponse.success("Lista de Estados de mesa obtenida", estadoMesaService.listarTodos());
+    @GetMapping public ResponseEntity<ApiResponse<List<EstadoMesa>>> listar() {
+        return ApiResponse.success("Lista obtenida", service.listarTodos());
     }
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<EstadoMesa>> crear(@RequestBody EstadoMesa estadoMesa) {
-        EstadoMesa guardado = estadoMesaService.guardar(estadoMesa);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Estado de mesa creado con éxito", guardado).getBody());
+    @GetMapping("/{id}") public ResponseEntity<ApiResponse<EstadoMesa>> obtener(@PathVariable Integer id) {
+        return ApiResponse.success("Encontrado", service.buscarPorId(id));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<EstadoMesa>> obtenerPorId(@PathVariable Integer id) {
-
-        return estadoMesaService.buscarPorId(id)
-                .map(estadoMesa -> ApiResponse.success("Estado de mesa encontrado", estadoMesa))
-                .orElse(ApiResponse.error("No se encontró el Estado de mesa con ID: " + id, HttpStatus.NOT_FOUND));
+    @PostMapping public ResponseEntity<ApiResponse<EstadoMesa>> crear(@RequestBody EstadoMesa e) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Creado", service.guardar(e)).getBody());
     }
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<EstadoMesa>> actualizar(@PathVariable Integer id, @RequestBody EstadoMesa detalles) {
-        return estadoMesaService.buscarPorId(id)
-                .map(estadoExistente -> {
-                    estadoExistente.setNombre(detalles.getNombre());
 
-                    EstadoMesa actualizado = estadoMesaService.guardar(estadoExistente);
-                    return ApiResponse.success("Estado de mesa actualizado correctamente", actualizado);
-                })
-                .orElse(ApiResponse.error("No se puede actualizar: El Estado de mesa con ID " + id + " no existe", HttpStatus.NOT_FOUND));
+    @PutMapping("/{id}") public ResponseEntity<ApiResponse<EstadoMesa>> actualizar(@PathVariable Integer id, @RequestBody EstadoMesa d) {
+        EstadoMesa ex = service.buscarPorId(id);
+        ex.setNombre(d.getNombre());
+        return ApiResponse.success("Actualizado", service.guardar(ex));
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
 
-        estadoMesaService.eliminar(id);
-        return ApiResponse.success("Estado de mesa eliminado correctamente", null);
+    @DeleteMapping("/{id}") public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
+        service.eliminar(id);
+        return ApiResponse.success("Eliminado", null);
     }
 }
