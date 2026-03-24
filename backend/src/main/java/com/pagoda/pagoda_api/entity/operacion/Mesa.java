@@ -40,9 +40,6 @@ public class Mesa {
     private EstadoMesa estado;
 
     @Column(nullable = false)
-    private boolean activo;
+    private Boolean activo;
 
-    public boolean getActivo() {
-        return activo;
-    }
 }

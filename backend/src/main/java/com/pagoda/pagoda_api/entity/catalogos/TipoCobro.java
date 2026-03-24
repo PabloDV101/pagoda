@@ -15,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TipoCobro {
+public class    TipoCobro {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

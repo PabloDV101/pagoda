@@ -52,6 +52,20 @@ public enum ErrorCodigo {
 
     // Parámetros Local
     PARAMETROS_NO_CONFIGURADOS("No se ha encontrado la configuración inicial del local", HttpStatus.NOT_FOUND),
+    // Ventas
+    VENTA_NO_ENCONTRADA("La venta solicitada no existe", HttpStatus.NOT_FOUND),
+    VENTA_YA_CERRADA("No se puede modificar una venta que ya ha sido cerrada", HttpStatus.BAD_REQUEST),
+    MESA_OCUPADA("La mesa seleccionada ya tiene una venta activa", HttpStatus.CONFLICT),
+    // Items de Venta
+    ITEM_NO_ENCONTRADO("El ítem de venta solicitado no existe", HttpStatus.NOT_FOUND),
+    STOCK_INSUFICIENTE("No hay suficiente stock para el producto seleccionado", HttpStatus.BAD_REQUEST),
+    // Pagos
+    PAGO_NO_ENCONTRADO("El registro de pago solicitado no existe", HttpStatus.NOT_FOUND),
+    MONTO_PAGO_INVALIDO("El monto del pago debe ser mayor a cero", HttpStatus.BAD_REQUEST),
+    MONTO_EXCEDE_TOTAL("El monto del pago excede el saldo pendiente de la cuenta", HttpStatus.CONFLICT),
+    // Reportes
+    REPORTE_NO_ENCONTRADO("No se encontró el reporte solicitado para esta jornada", HttpStatus.NOT_FOUND),
+
     ;
 
     private final String mensaje;
