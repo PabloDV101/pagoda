@@ -1,0 +1,27 @@
+<div class="propinas">
+
+  <h1>Reporte de Propinas</h1>
+
+  <!-- Filtro fechas -->
+  <div class="filtros">
+    <div class="filtro-grupo">
+      <label>Fecha de Inicio</label>
+      <input type="date" [value]="fechaInicio()"
+             (change)="setFechaInicio($any($event.target).value)" />
+    </div>
+    <div class="filtro-grupo">
+      <label>Fecha de Fin</label>
+      <input type="date" [value]="fechaFin()"
+             (change)="setFechaFin($any($event.target).value)" />
+    </div>
+  </div>
+
+  <!-- Tarjeta total -->
+  <div class="card-total">
+    <span class="card-label">Total Propinas Generadas</span>
+    <span class="card-valor">
+      {{ resumen().total_propinas_neto | currency:'MXN':'symbol-narrow':'1.2-2' }}
+    </span>
+  </div>
+
+</div>

@@ -1,0 +1,46 @@
+<div class="top5">
+
+  <h1>Top 5 Platillos Más Vendidos</h1>
+
+  <!-- Filtro fechas -->
+  <div class="filtros">
+    <div class="filtro-grupo">
+      <label>Start Date</label>
+      <input type="date" [value]="fechaInicio()"
+             (change)="setFechaInicio($any($event.target).value)" />
+    </div>
+    <div class="filtro-grupo">
+      <label>End Date</label>
+      <input type="date" [value]="fechaFin()"
+             (change)="setFechaFin($any($event.target).value)" />
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="tabla-container">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Posición</th>
+          <th>Nombre del Platillo</th>
+          <th>Categoría</th>
+          <th class="text-right">Cantidad Vendida</th>
+          <th class="text-right">Total Generado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of platillos(); track p.producto_id) {
+          <tr>
+            <td class="posicion">#{{ p.posicion }}</td>
+            <td>{{ p.producto?.nombre }}</td>
+            <td>{{ p.producto?.categoria?.nombre }}</td>
+            <td class="text-right">{{ p.cantidad_vendida }}</td>
+            <td class="text-right">{{ p.total_generado | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <p class="nota">Ordenado por Total Generado · de mayor a menor</p>
+  </div>
+
+</div>

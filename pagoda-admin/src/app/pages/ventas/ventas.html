@@ -1,0 +1,99 @@
+<div class="ventas">
+
+  <div class="page-header">
+    <h1>Reporte de Ventas</h1>
+    <button class="btn-export" (click)="exportarPDF()">
+      <span>📄</span> Export PDF
+    </button>
+  </div>
+
+  <!-- Filtro periodo -->
+  <div class="filtro-periodo">
+    <select (change)="setPeriodo($any($event.target).value)">
+      <option value="diario">Diario</option>
+      <option value="semanal">Semanal</option>
+      <option value="mensual">Mensual</option>
+    </select>
+  </div>
+
+
+  <!-- Total -->
+  <h2 class="total-ventas">
+    Total de Ventas: {{ resumen().total_ventas | currency:'MXN':'symbol-narrow':'1.0-0' }}
+  </h2>
+
+  <!-- Métricas -->
+  <div class="metricas">
+    <div class="metrica-card">
+      <span class="metrica-label">Fondo Inicial</span>
+      <span class="metrica-valor">{{ resumen().fondo_caja | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+    </div>
+    <div class="metrica-card">
+      <span class="metrica-label">Total Efectivo</span>
+      <span class="metrica-valor">{{ resumen().total_efectivo | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+    </div>
+    <div class="metrica-card">
+      <span class="metrica-label">Total Tarjeta Bruto</span>
+      <span class="metrica-valor">{{ resumen().total_tarjeta_bruto | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+      <span class="metrica-nota">-3.5% comisión</span>
+    </div>
+    <div class="metrica-card">
+      <span class="metrica-label">Total Tarjeta Neto</span>
+      <span class="metrica-valor">{{ resumen().total_tarjeta_neto | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+    </div>
+  </div>
+
+
+  <!-- Tabla de ventas -->
+  <div class="tabla-container">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Descripción</th>
+          <th class="text-right">Total Bruto</th>
+          <th class="text-right">Total Neto</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (venta of ventas(); track venta.id) {
+
+        <!-- Fila encabezado de mesa -->
+        <tr class="fila-mesa" (click)="toggleVenta(venta.id)">
+          <td>
+            <span class="chevron">{{ isExpandida(venta.id) ? '▾' : '›' }}</span>
+            Mesa {{ venta.mesa?.numero }} Pedido {{ venta.id }}
+          </td>
+          <td class="text-right">{{ venta.total_cuenta | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+          <td class="text-right">{{ getTotalNeto(venta) | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+        </tr>
+
+        <!-- Filas de items (expandidas) -->
+        @if (isExpandida(venta.id)) {
+        @for (item of venta.items; track item.id) {
+        <tr class="fila-item">
+          <td class="item-nombre">{{ item.producto?.nombre }}</td>
+          <td class="text-right">{{ item.precio_unitario | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+          <td class="text-right text-muted">—</td>
+        </tr>
+        }
+
+        <!-- Fila de pago -->
+        @for (pago of venta.pagos; track pago.id) {
+        <tr class="fila-pago">
+          <td class="pago-label">
+            • {{ pago.metodo_pago?.nombre }}
+            @if (pago.metodo_pago?.nombre === 'TARJETA') {
+            <span class="comision">(-{{ pago.comision_porcentaje }}%)</span>
+            }
+          </td>
+          <td class="text-right">{{ pago.monto | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+          <td class="text-right">{{ pago.monto_neto | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+        </tr>
+        }
+        }
+        }
+      </tbody>
+    </table>
+  </div>
+
+</div>

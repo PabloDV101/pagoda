@@ -1,0 +1,17 @@
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-name">Pagoda</span>
+    <span class="brand-sub">Sistema POS</span>
+  </div>
+  <nav>
+    @for (item of navItems; track item.route) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        class="nav-item"
+      >
+        {{ item.label }}
+      </a>
+    }
+  </nav>
+</aside>

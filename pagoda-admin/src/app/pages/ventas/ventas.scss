@@ -1,0 +1,161 @@
+.ventas {
+  width: 100%;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #111827;
+  }
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #111827;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover { background: #1f2937; }
+}
+
+.filtro-periodo {
+  margin-bottom: 16px;
+
+  select {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #374151;
+    background: #fff;
+    cursor: pointer;
+
+    &:focus { outline: none; border-color: #111827; }
+  }
+}
+
+.total-ventas {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #111827;
+}
+
+.metricas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.metrica-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metrica-label {
+  font-size: 15px;
+  color: #6b7280;
+}
+
+.metrica-valor {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.metrica-nota {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.tabla-container {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    background: #f9fafb;
+
+    th {
+      padding: 14px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #374151;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+
+    td {
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #111827;
+    }
+  }
+}
+
+.fila-mesa {
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover { background: #f9fafb; }
+
+  .chevron {
+    margin-right: 8px;
+    color: #6b7280;
+    font-size: 18px;
+  }
+}
+
+.fila-item td {
+  color: #374151;
+  font-weight: 400;
+}
+
+.item-nombre {
+  padding-left: 36px !important;
+}
+
+.fila-pago td {
+  color: #374151;
+}
+
+.pago-label {
+  padding-left: 48px !important;
+  font-weight: 500;
+}
+
+.comision {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.text-right { text-align: right !important; }
+.text-muted { color: #9ca3af !important; }
