@@ -1,0 +1,11 @@
+# Archivos compilados
+*.class
+
+# Carpeta de build de Java
+/target/
+
+# Archivos temporales
+*.log
+
+# Configuración del sistema
+.DS_Store
