@@ -1,7 +1,9 @@
 package com.pagoda.pagoda_api.controller.operacion;
 
 import com.pagoda.pagoda_api.dto.ApiResponse;
-import com.pagoda.pagoda_api.entity.operacion.Usuario;
+import com.pagoda.pagoda_api.dto.operacion.ActualizarUsuarioDTO;
+import com.pagoda.pagoda_api.dto.operacion.CrearUsuarioDTO;
+import com.pagoda.pagoda_api.dto.operacion.ListarUsuarioDTO;
 import com.pagoda.pagoda_api.service.operacion.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,34 +20,31 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Usuario>>> listar() {
-        return ApiResponse.success("Lista de usuarios obtenida", usuarioService.listarTodos());
+    public ResponseEntity<ApiResponse<List<ListarUsuarioDTO>>> listar() {
+        return ApiResponse.success("Lista de usuarios obtenida", usuarioService.listarTodosDTO());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Usuario>> obtener(@PathVariable Integer id) {
-        return ApiResponse.success("Usuario encontrado", usuarioService.buscarPorId(id));
+    public ResponseEntity<ApiResponse<ListarUsuarioDTO>> obtener(@PathVariable Integer id) {
+        return ApiResponse.success("Usuario encontrado", usuarioService.buscarPorIdDTO(id));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Usuario>> crear(@RequestBody Usuario usuario) {
-        Usuario guardado = usuarioService.guardar(usuario);
+    public ResponseEntity<ApiResponse<ListarUsuarioDTO>> crear(@RequestBody CrearUsuarioDTO dto) {
+        ListarUsuarioDTO guardado = usuarioService.crear(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Usuario creado con éxito", guardado).getBody());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Usuario>> actualizar(@PathVariable Integer id, @RequestBody Usuario d) {
-        Usuario ex = usuarioService.buscarPorId(id);
-        ex.setNombre(d.getNombre());
-        ex.setRol(d.getRol());
-        if (d.getPinHash() != null) ex.setPinHash(d.getPinHash());
-        return ApiResponse.success("Usuario actualizado", usuarioService.guardar(ex));
+    public ResponseEntity<ApiResponse<ListarUsuarioDTO>> actualizar(@PathVariable Integer id, @RequestBody ActualizarUsuarioDTO dto) {
+        ListarUsuarioDTO actualizado = usuarioService.actualizar(id, dto);
+        return ApiResponse.success("Usuario actualizado correctamente", actualizado);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
-        usuarioService.desactivar(id);
-        return ApiResponse.success("Usuario desactivado correctamente", null);
+        usuarioService.eliminar(id);
+        return ApiResponse.success("Usuario eliminado correctamente", null);
     }
 }

@@ -32,6 +32,7 @@ public enum ErrorCodigo {
 
     USUARIO_NO_ENCONTRADO("El usuario solicitado no existe", HttpStatus.NOT_FOUND),
     NOMBRE_USUARIO_DUPLICADO("Ya existe un usuario con ese nombre", HttpStatus.CONFLICT),
+    CREDENCIALES_INVALIDAS("Las credenciales proporcionadas son inválidas", HttpStatus.UNAUTHORIZED),
 
     // Productos
     PRODUCTO_NO_ENCONTRADO("El producto solicitado no existe", HttpStatus.NOT_FOUND),

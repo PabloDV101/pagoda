@@ -1,0 +1,144 @@
+<div class="usuarios">
+  @if (cargando()) {
+  <p class="estado-msg">Cargando información...</p>
+  }
+
+  @if (!cargando()) {
+  <div class="page-header">
+    <div>
+      <h1>👥 Gestión de Usuarios</h1>
+      <p class="subtitulo">Administra los meseros y usuarios del sistema</p>
+    </div>
+    <button class="btn btn-primary" (click)="abrirModal()">+ Nuevo Usuario</button>
+  </div>
+
+  @if (error()) {
+  <div class="alert alert-error">
+    <span>{{ error() }}</span>
+    <button class="btn-cerrar-alert" (click)="limpiarMensajes()">✕</button>
+  </div>
+  }
+
+  @if (exito()) {
+  <div class="alert alert-exito">
+    <span>{{ exito() }}</span>
+    <button class="btn-cerrar-alert" (click)="limpiarMensajes()">✕</button>
+  </div>
+  }
+
+  <!-- Tabla de Usuarios -->
+  <div class="tabla-container">
+    @if (usuarios().length > 0) {
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (usuario of usuarios(); track usuario.id) {
+        <tr>
+          <td>{{ usuario.id }}</td>
+          <td>{{ usuario.nombre }}</td>
+          <td><span class="badge">{{ usuario.rol }}</span></td>
+          <td>
+            @if (usuario.activo) {
+            <span class="estado estado-activo">✓ Activo</span>
+            } @else {
+            <span class="estado estado-inactivo">✗ Inactivo</span>
+            }
+          </td>
+          <td class="acciones">
+            <button class="btn-icon btn-edit" (click)="abrirModal(usuario)" title="Editar">✎</button>
+            <button class="btn-icon btn-delete" (click)="eliminar(usuario.id)" title="Eliminar">🗑</button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    } @else {
+    <p class="sin-datos">No hay usuarios registrados</p>
+    }
+  </div>
+  }
+
+  <!-- Modal Crear/Editar -->
+  @if (mostrarModal()) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editando() ? '✎ Editar Usuario' : '➕ Nuevo Usuario' }}</h2>
+        <button class="btn-cerrar" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <form class="formulario" (ngSubmit)="guardar()">
+        <div class="campo">
+          <label>Nombre de Usuario *</label>
+          <input
+            type="text"
+            [(ngModel)]="form().nombre"
+            name="nombre"
+            placeholder="Ingresa el nombre..."
+            required
+          />
+        </div>
+
+        <div class="campo">
+          <label>Rol *</label>
+          <select [(ngModel)]="form().rolId" name="rolId" required>
+            <option value="0" disabled>Selecciona un rol</option>
+            @for (rol of roles(); track rol.id) {
+            <option [value]="rol.id">{{ rol.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="campo">
+          <label>PIN (código de acceso)</label>
+          <input
+            type="text"
+            [(ngModel)]="form().pinHash"
+            name="pinHash"
+            placeholder="Ingresa el PIN..."
+          />
+        </div>
+
+        @if (!editando()) {
+        <div class="campo">
+          <label>Contraseña *</label>
+          <input
+            type="password"
+            [(ngModel)]="form().contrasena"
+            name="contrasena"
+            placeholder="Ingresa la contraseña..."
+            required
+          />
+        </div>
+        }
+
+        @if (editando()) {
+        <div class="campo">
+          <label>
+            <input
+              type="checkbox"
+              [(ngModel)]="(form() as any).activo"
+              name="activo"
+            />
+            Usuario Activo
+          </label>
+        </div>
+        }
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">{{ editando() ? 'Actualizar' : 'Crear' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+</div>

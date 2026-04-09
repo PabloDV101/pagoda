@@ -1,8 +1,11 @@
 package com.pagoda.pagoda_api.controller.operacion;
 
 import com.pagoda.pagoda_api.dto.ApiResponse;
+import com.pagoda.pagoda_api.dto.operacion.ProductoCreateDTO;
 import com.pagoda.pagoda_api.entity.operacion.Producto;
+import com.pagoda.pagoda_api.entity.catalogos.Categoria;
 import com.pagoda.pagoda_api.service.operacion.ProductoService;
+import com.pagoda.pagoda_api.repository.catalogos.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,9 @@ public class ProductoController {
 
     @Autowired
     private ProductoService productoService;
+    
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<Producto>>> listar() {
@@ -24,7 +30,19 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Producto>> crear(@RequestBody Producto producto) {
+    public ResponseEntity<ApiResponse<Producto>> crear(@RequestBody ProductoCreateDTO dto) {
+        Categoria categoria = categoriaRepository.findById(dto.getCategoria_id())
+            .orElseThrow(() -> new com.pagoda.pagoda_api.exception.BusinessException(
+                com.pagoda.pagoda_api.exception.ErrorCodigo.CATEGORIA_NO_ENCONTRADA));
+        
+        Producto producto = Producto.builder()
+            .nombre(dto.getNombre())
+            .descripcion(dto.getDescripcion())
+            .precio(dto.getPrecio())
+            .categoria(categoria)
+            .activo(true)
+            .build();
+        
         Producto guardado = productoService.guardar(producto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Producto creado con éxito", guardado).getBody());
@@ -36,11 +54,19 @@ public class ProductoController {
     }
 
 @PutMapping("/{id}")
-public ResponseEntity<ApiResponse<Producto>> actualizar(@PathVariable Integer id, @RequestBody Producto d) {
+public ResponseEntity<ApiResponse<Producto>> actualizar(@PathVariable Integer id, @RequestBody ProductoCreateDTO dto) {
     Producto ex = productoService.buscarPorId(id);
-    ex.setNombre(d.getNombre());
-    ex.setPrecio(d.getPrecio());
-    ex.setCategoria(d.getCategoria());
+    ex.setNombre(dto.getNombre());
+    ex.setPrecio(dto.getPrecio());
+    ex.setDescripcion(dto.getDescripcion());
+    
+    if (dto.getCategoria_id() != null) {
+        Categoria categoria = categoriaRepository.findById(dto.getCategoria_id())
+            .orElseThrow(() -> new com.pagoda.pagoda_api.exception.BusinessException(
+                com.pagoda.pagoda_api.exception.ErrorCodigo.CATEGORIA_NO_ENCONTRADA));
+        ex.setCategoria(categoria);
+    }
+    
     return ApiResponse.success("Producto actualizado", productoService.guardar(ex));
 }
 

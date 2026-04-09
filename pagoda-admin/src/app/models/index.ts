@@ -128,4 +128,10 @@ export interface CrearProductoDTO {
   categoria_id: number;
 }
 
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
 export interface ActualizarProductoDTO extends Partial<CrearProductoDTO> {}

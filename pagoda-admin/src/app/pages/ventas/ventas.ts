@@ -1,84 +1,92 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { PeriodoVentas, ResumenVentasDiario, Venta } from '../../models/index';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { VentasService } from '../../services/ventas';
+import { JornadaService } from '../../services/jornada';
 
 @Component({
   selector: 'app-ventas',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe],
+  imports: [CurrencyPipe],
   templateUrl: './ventas.html',
   styleUrl: './ventas.scss'
 })
 export class Ventas implements OnInit {
+  private ventasService = inject(VentasService);
+  private jornadaService = inject(JornadaService);
 
   periodo = signal<PeriodoVentas>('diario');
 
   resumen = signal<ResumenVentasDiario>({
-    jornada_id: 1,
-    total_ventas: 48337,
-    total_efectivo: 24745,
-    total_tarjeta_bruto: 22375,
-    total_tarjeta_neto: 21592,
-    total_transacciones: 12,
-    fondo_caja: 2000
+    jornada_id: 0,
+    total_ventas: 0,
+    total_efectivo: 0,
+    total_tarjeta_bruto: 0,
+    total_tarjeta_neto: 0,
+    total_transacciones: 0,
+    fondo_caja: 0
   });
 
-  ventas = signal<Venta[]>([
-    {
-      id: 1, mesa_id: 1, usuario_id: 1, jornada_id: 1,
-      num_comensales: 2, tipo_cobro_id: 1, total_cuenta: 320,
-      comision_porcentaje: 0, fecha_creacion: '2026-04-03T10:00:00',
-      mesa: { id: 1, numero: 1, capacidad: 4, estado_id: 1 },
-      items: [
-        { id: 1, venta_id: 1, producto_id: 1, numero_comensal: 1, precio_unitario: 145, cantidad: 1, estado_item_id: 2, producto: { id: 1, nombre: 'Pad Thai', precio: 145, categoria_id: 1, activo: true, fecha_creacion: '', categoria: { id: 1, nombre: 'Platos Principales' } } },
-        { id: 2, venta_id: 1, producto_id: 2, numero_comensal: 1, precio_unitario: 50, cantidad: 1, estado_item_id: 2, producto: { id: 2, nombre: 'Spring Rolls', precio: 50, categoria_id: 2, activo: true, fecha_creacion: '', categoria: { id: 2, nombre: 'Entradas' } } },
-        { id: 3, venta_id: 1, producto_id: 3, numero_comensal: 2, precio_unitario: 125, cantidad: 1, estado_item_id: 2, producto: { id: 3, nombre: 'Tom Yum Goong', precio: 125, categoria_id: 3, activo: true, fecha_creacion: '', categoria: { id: 3, nombre: 'Sopas' } } },
-      ],
-      pagos: [
-        { id: 1, venta_id: 1, monto: 320, comision_porcentaje: 0, monto_neto: 320, propina_monto: 0, propina_neto: 0, metodo_pago_id: 1, metodo_pago: { id: 1, nombre: 'EFECTIVO' } }
-      ]
-    },
-    {
-      id: 2, mesa_id: 3, usuario_id: 1, jornada_id: 1,
-      num_comensales: 2, tipo_cobro_id: 1, total_cuenta: 255,
-      comision_porcentaje: 3.5, fecha_creacion: '2026-04-03T11:00:00',
-      mesa: { id: 3, numero: 3, capacidad: 4, estado_id: 1 },
-      items: [
-        { id: 4, venta_id: 2, producto_id: 4, numero_comensal: 1, precio_unitario: 155, cantidad: 1, estado_item_id: 2, producto: { id: 4, nombre: 'Green Curry', precio: 155, categoria_id: 1, activo: true, fecha_creacion: '', categoria: { id: 1, nombre: 'Platos Principales' } } },
-        { id: 5, venta_id: 2, producto_id: 5, numero_comensal: 1, precio_unitario: 75, cantidad: 1, estado_item_id: 2, producto: { id: 5, nombre: 'Mango Sticky Rice', precio: 75, categoria_id: 4, activo: true, fecha_creacion: '', categoria: { id: 4, nombre: 'Postres' } } },
-        { id: 6, venta_id: 2, producto_id: 6, numero_comensal: 2, precio_unitario: 25, cantidad: 1, estado_item_id: 2, producto: { id: 6, nombre: 'Satay de Pollo', precio: 25, categoria_id: 2, activo: true, fecha_creacion: '', categoria: { id: 2, nombre: 'Entradas' } } },
-      ],
-      pagos: [
-        { id: 2, venta_id: 2, monto: 255, comision_porcentaje: 3.5, monto_neto: 246, propina_monto: 0, propina_neto: 0, metodo_pago_id: 2, metodo_pago: { id: 2, nombre: 'TARJETA' } }
-      ]
-    },
-    {
-      id: 3, mesa_id: 2, usuario_id: 1, jornada_id: 1,
-      num_comensales: 3, tipo_cobro_id: 1, total_cuenta: 410,
-      comision_porcentaje: 0, fecha_creacion: '2026-04-03T12:00:00',
-      mesa: { id: 2, numero: 2, capacidad: 6, estado_id: 1 },
-      items: [],
-      pagos: [
-        { id: 3, venta_id: 3, monto: 410, comision_porcentaje: 0, monto_neto: 410, propina_monto: 0, propina_neto: 0, metodo_pago_id: 1, metodo_pago: { id: 1, nombre: 'EFECTIVO' } }
-      ]
-    },
-    {
-      id: 4, mesa_id: 4, usuario_id: 1, jornada_id: 1,
-      num_comensales: 2, tipo_cobro_id: 1, total_cuenta: 480,
-      comision_porcentaje: 3.5, fecha_creacion: '2026-04-03T13:00:00',
-      mesa: { id: 4, numero: 4, capacidad: 4, estado_id: 1 },
-      items: [],
-      pagos: [
-        { id: 4, venta_id: 4, monto: 480, comision_porcentaje: 3.5, monto_neto: 463, propina_monto: 0, propina_neto: 0, metodo_pago_id: 2, metodo_pago: { id: 2, nombre: 'TARJETA' } }
-      ]
-    }
-  ]);
-
+  ventas = signal<Venta[]>([]);
   expandidas = signal<Set<number>>(new Set());
 
-  ngOnInit() { }
+  cargando = signal(false);
+  error = signal<string | null>(null);
+
+  ngOnInit() {
+    this.cargarVentas();
+  }
+
+  cargarVentas() {
+    this.cargando.set(true);
+    const jornada = this.jornadaService.jornadaActual();
+    
+    if (jornada && jornada.id) {
+      this.cargarDatos(jornada.id);
+    } else {
+      this.cargarJornadaYVentas();
+    }
+  }
+
+  cargarJornadaYVentas() {
+    this.jornadaService.cargar().subscribe({
+      next: (jornada) => {
+        if (jornada && jornada.id) {
+          this.cargarDatos(jornada.id);
+        }
+      },
+      error: () => {
+        this.error.set('Error al cargar la jornada');
+        this.cargando.set(false);
+      }
+    });
+  }
+
+  cargarDatos(jornadaId: number) {
+    this.ventasService.getResumenVentas(jornadaId).subscribe({
+      next: (resumen) => {
+        if (Array.isArray(resumen) && resumen.length > 0) {
+          this.resumen.set(resumen[0]); // Tomar el primer resumen
+        }
+      },
+      error: () => {
+        this.error.set('Error al cargar el resumen de ventas');
+      }
+    });
+
+    this.ventasService.getVentasActivas().subscribe({
+      next: (data) => {
+        this.ventas.set(data);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.error.set('Error al cargar las ventas');
+        this.cargando.set(false);
+      }
+    });
+  }
 
   setPeriodo(p: PeriodoVentas) {
     this.periodo.set(p);

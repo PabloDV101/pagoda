@@ -1,6 +1,12 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/login/login').then(m => m.LoginComponent)
+  },
   {
     path: '',
     redirectTo: 'ventas',
@@ -10,6 +16,7 @@ export const routes: Routes = [
     path: '',
     loadComponent: () =>
       import('./layout/shell/shell').then(m => m.ShellComponent),
+    canActivate: [authGuard],
     children: [
       {
         path: 'ventas',
@@ -30,6 +37,21 @@ export const routes: Routes = [
         path: 'propinas',
         loadComponent: () =>
           import('./pages/propinas/propinas').then(m => m.Propinas)
+      },
+      {
+        path: 'configuracion',
+        loadComponent: () =>
+          import('./pages/configuracion/configuracion').then(m => m.ConfiguracionComponent)
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () =>
+          import('./pages/usuarios/usuarios').then(m => m.UsuariosComponent)
+      },
+      {
+        path: 'categorias',
+        loadComponent: () =>
+          import('./pages/categorias/categorias').then(m => m.CategoriasComponent)
       }
     ]
   },

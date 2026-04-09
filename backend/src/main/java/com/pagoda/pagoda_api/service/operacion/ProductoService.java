@@ -17,7 +17,7 @@ public class ProductoService {
     public List<Producto> listarActivos() { return repository.findByActivoTrue(); }
 
     public Producto buscarPorId(Integer id) {
-        return repository.findById(id).orElseThrow(() -> new BusinessException(ErrorCodigo.PRODUCTO_NO_ENCONTRADO));
+        return repository.findByIdWithCategoria(id).orElseThrow(() -> new BusinessException(ErrorCodigo.PRODUCTO_NO_ENCONTRADO));
     }
 
     public Producto guardar(Producto producto) {

@@ -1,6 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ResumenPlatillosDiario } from '../../models/index';
+import { Top5Service } from '../../services/top5';
+import { JornadaService } from '../../services/jornada';
 
 @Component({
   selector: 'app-top5',
@@ -9,18 +11,59 @@ import { ResumenPlatillosDiario } from '../../models/index';
   templateUrl: './top5.html',
   styleUrl: './top5.scss'
 })
-export class Top5 {
+export class Top5 implements OnInit {
+  private top5Service = inject(Top5Service);
+  private jornadaService = inject(JornadaService);
 
   fechaInicio = signal('2026-02-24');
   fechaFin = signal('2026-03-02');
 
-  platillos = signal<ResumenPlatillosDiario[]>([
-    { producto_id: 1, cantidad_vendida: 68, total_generado: 9860, posicion: 1, producto: { id: 1, nombre: 'Pad Thai', precio: 145, categoria_id: 1, activo: true, fecha_creacion: '', categoria: { id: 1, nombre: 'Platos Principales' } } },
-    { producto_id: 2, cantidad_vendida: 38, total_generado: 6270, posicion: 2, producto: { id: 2, nombre: 'Ramen Tonkotsu', precio: 165, categoria_id: 2, activo: true, fecha_creacion: '', categoria: { id: 2, nombre: 'Ramen' } } },
-    { producto_id: 3, cantidad_vendida: 52, total_generado: 6240, posicion: 3, producto: { id: 3, nombre: 'California Roll', precio: 120, categoria_id: 3, activo: true, fecha_creacion: '', categoria: { id: 3, nombre: 'Rolls' } } },
-    { producto_id: 4, cantidad_vendida: 45, total_generado: 5625, posicion: 4, producto: { id: 4, nombre: 'Tom Yum Goong', precio: 125, categoria_id: 4, activo: true, fecha_creacion: '', categoria: { id: 4, nombre: 'Sopas' } } },
-    { producto_id: 5, cantidad_vendida: 34, total_generado: 5270, posicion: 5, producto: { id: 5, nombre: 'Green Curry', precio: 155, categoria_id: 1, activo: true, fecha_creacion: '', categoria: { id: 1, nombre: 'Platos Principales' } } },
-  ]);
+  platillos = signal<ResumenPlatillosDiario[]>([]);
+
+  cargando = signal(false);
+  error = signal<string | null>(null);
+
+  ngOnInit() {
+    this.cargarTop5();
+  }
+
+  cargarTop5() {
+    this.cargando.set(true);
+    const jornada = this.jornadaService.jornadaActual();
+    
+    if (jornada && jornada.id) {
+      this.cargarDatos(jornada.id);
+    } else {
+      this.cargarJornadaYTop5();
+    }
+  }
+
+  cargarJornadaYTop5() {
+    this.jornadaService.cargar().subscribe({
+      next: (jornada) => {
+        if (jornada && jornada.id) {
+          this.cargarDatos(jornada.id);
+        }
+      },
+      error: () => {
+        this.error.set('Error al cargar la jornada');
+        this.cargando.set(false);
+      }
+    });
+  }
+
+  cargarDatos(jornadaId: number) {
+    this.top5Service.getTop5(jornadaId).subscribe({
+      next: (data) => {
+        this.platillos.set(data);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.error.set('Error al cargar los platillos');
+        this.cargando.set(false);
+      }
+    });
+  }
 
   setFechaInicio(val: string) { this.fechaInicio.set(val); }
   setFechaFin(val: string) { this.fechaFin.set(val); }

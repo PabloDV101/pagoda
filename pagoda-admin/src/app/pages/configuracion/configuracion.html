@@ -1,0 +1,133 @@
+<div class="configuracion">
+  @if (cargando()) {
+  <p class="estado-msg">Cargando información...</p>
+  }
+
+  @if (!cargando()) {
+  <div class="page-header">
+    <div>
+      <h1>⚙️ Configuración</h1>
+      <p class="subtitulo">Gestiona tu cuenta de administrador</p>
+    </div>
+  </div>
+
+  @if (error()) {
+  <div class="alert alert-error">
+    <span>{{ error() }}</span>
+    <button class="btn-cerrar-alert" (click)="limpiarMensajes()">✕</button>
+  </div>
+  }
+
+  @if (exito()) {
+  <div class="alert alert-exito">
+    <span>{{ exito() }}</span>
+    <button class="btn-cerrar-alert" (click)="limpiarMensajes()">✕</button>
+  </div>
+  }
+
+  <div class="contenedor-principal">
+    <!-- Panel de Perfil -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>👤 Datos de Administrador</h2>
+        <p class="texto-secundario">Usuario Actual: <strong>{{ admin()?.usuario || '-' }}</strong></p>
+      </div>
+
+      <form (ngSubmit)="guardar()" class="formulario">
+        <div class="campo">
+          <label>Nombre de Usuario</label>
+          <input
+            type="text"
+            [value]="formActualizar().usuario"
+            (input)="setFormField('usuario', $any($event.target).value)"
+            [class.error]="erroresForm()['usuario']"
+            placeholder="Ingresa el nuevo nombre de usuario..." />
+          @if (erroresForm()['usuario']) {
+          <span class="error-msg">{{ erroresForm()['usuario'] }}</span>
+          }
+        </div>
+
+        <hr class="divisor" />
+
+        <h3>Cambiar Contraseña</h3>
+
+        <div class="campo">
+          <label>Contraseña Actual *</label>
+          <input
+            type="password"
+            [value]="formActualizar().contrasenaActual"
+            (input)="setFormField('contrasenaActual', $any($event.target).value)"
+            [class.error]="erroresForm()['contrasenaActual']"
+            placeholder="Ingresa tu contraseña actual..." />
+          @if (erroresForm()['contrasenaActual']) {
+          <span class="error-msg">{{ erroresForm()['contrasenaActual'] }}</span>
+          }
+          <p class="texto-ayuda">Requerida para confirmar cambios en tu cuenta</p>
+        </div>
+
+        <div class="campo">
+          <label>Nueva Contraseña (Opcional)</label>
+          <input
+            type="password"
+            [value]="formActualizar().contrasenaNueva"
+            (input)="setFormField('contrasenaNueva', $any($event.target).value)"
+            [class.error]="erroresForm()['contrasenaNueva']"
+            placeholder="Deja vacío si no quieres cambiarla..." />
+          @if (erroresForm()['contrasenaNueva']) {
+          <span class="error-msg">{{ erroresForm()['contrasenaNueva'] }}</span>
+          }
+          @if (formActualizar().contrasenaNueva) {
+          <p class="texto-ayuda">✓ Mínimo 6 caracteres requeridos</p>
+          }
+        </div>
+
+        <div class="acciones">
+          <button type="submit" class="btn-guardar" [disabled]="guardando()">
+            @if (guardando()) {
+            Guardando...
+            } @else {
+            💾 Guardar Cambios
+            }
+          </button>
+        </div>
+
+        <p class="texto-advertencia">ℹ️ Por seguridad, debes ingresar tu contraseña actual para confirmar cualquier cambio</p>
+      </form>
+    </div>
+
+    <!-- Panel de Información -->
+    <div class="panel panel-info">
+      <div class="panel-header">
+        <h2>ℹ️ Información de Seguridad</h2>
+      </div>
+
+      <div class="info-item">
+        <strong>ID Administrador:</strong>
+        <span>{{ admin()?.id || '-' }}</span>
+      </div>
+
+      <div class="info-item">
+        <strong>Estado:</strong>
+        <span class="badge badge-activo">
+          @if (admin()?.activo) {
+          Activo
+          } @else {
+          Inactivo
+          }
+        </span>
+      </div>
+
+      <div class="recomendaciones">
+        <h3>⚡ Recomendaciones de Seguridad</h3>
+        <ul>
+          <li>Usa contraseñas de al menos 8 caracteres</li>
+          <li>Incluye números y caracteres especiales en tu contraseña</li>
+          <li>Cambia tu contraseña regularmente (cada 3 meses)</li>
+          <li>No compartas tu contraseña con otros usuarios</li>
+          <li>Cierra sesión cuando no estés usando la aplicación</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  }
+</div>

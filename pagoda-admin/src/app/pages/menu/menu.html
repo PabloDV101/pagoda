@@ -1,95 +1,279 @@
 <div class="menu">
+  @if (cargando()) {
+  <p class="estado-msg">Cargando...</p>
+  }
+
+  @if (error()) {
+  <p class="estado-msg error">{{ error() }}</p>
+  }
 
   <div class="page-header">
     <div>
       <h1>Gestión de Menú</h1>
-      <p class="subtitulo">Administra los productos de tu restaurante</p>
+      <p class="subtitulo">Administra categorías y productos de tu restaurante</p>
     </div>
-    <button class="btn-primary" (click)="abrirModalNuevo()">
-      + Añadir Platillo
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button 
+      class="tab" 
+      [class.active]="pestanaActiva() === 'productos'"
+      (click)="pestanaActiva.set('productos')">
+      Productos
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="pestanaActiva() === 'categorias'"
+      (click)="pestanaActiva.set('categorias')">
+      Categorías
     </button>
   </div>
 
-  <!-- Tabla -->
-  <div class="tabla-container">
-    <table class="tabla">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Categoría</th>
-          <th>Precio</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (producto of productos(); track producto.id) {
+  <!-- TAB: PRODUCTOS -->
+  @if (pestanaActiva() === 'productos') {
+  <div class="tab-content">
+    <div class="content-header">
+      <h2>Productos</h2>
+      <button class="btn-primary" (click)="abrirModalNuevoProducto()">
+        + Añadir Producto
+      </button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-contenedor">
+      <div class="filtro">
+        <label>🔍 Buscar por nombre</label>
+        <input 
+          type="text" 
+          [value]="busquedaNombre()"
+          (input)="busquedaNombre.set($any($event.target).value)"
+          placeholder="Ej: Pad Thai..." />
+      </div>
+
+      <div class="filtro">
+        <label>📂 Filtrar por categoría</label>
+        <select [value]="filtroCategoria()" (change)="setFiltroCategoria($any($event.target).value)">
+          <option value="0">Todas las categorías</option>
+          @for (cat of categorias(); track cat.id) {
+          <option [value]="cat.id">{{ cat.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filtro">
+        <label>📊 Ordenar por</label>
+        <select [value]="ordenamiento()" (change)="ordenamiento.set($any($event.target).value)">
+          <option value="nombre-asc">Nombre (A-Z)</option>
+          <option value="nombre-desc">Nombre (Z-A)</option>
+          <option value="precio-asc">Precio (menor a mayor)</option>
+          <option value="precio-desc">Precio (mayor a menor)</option>
+        </select>
+      </div>
+
+      @if (busquedaNombre() || filtroCategoria() > 0) {
+      <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar filtros</button>
+      }
+    </div>
+
+    <!-- Tabla de Productos -->
+    <div class="tabla-container">
+      @if (productosFiltrads().length === 0) {
+      <p class="sin-resultados">No hay productos que coincidan con los filtros</p>
+      } @else {
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (producto of productosFiltrads(); track producto.id) {
           <tr>
             <td>{{ producto.nombre }}</td>
-            <td>{{ producto.categoria?.nombre }}</td>
+            <td>{{ producto.categoria?.nombre || '-' }}</td>
             <td>{{ producto.precio | currency:'MXN':'symbol-narrow':'1.2-2' }}</td>
             <td class="acciones">
-              <button class="btn-icon" (click)="abrirModalEditar(producto)" title="Editar">✏️</button>
-              <button class="btn-icon btn-danger" (click)="eliminar(producto.id)" title="Eliminar">🗑️</button>
+              <button class="btn-icon" (click)="abrirModalEditarProducto(producto)" title="Editar">✏️</button>
+              <button class="btn-icon btn-danger" (click)="eliminarProducto(producto.id)" title="Eliminar">🗑️</button>
             </td>
           </tr>
-        }
-      </tbody>
-    </table>
+          }
+        </tbody>
+      </table>
+      }
+    </div>
   </div>
+  }
 
-  <!-- Modal -->
-  @if (modalAbierto()) {
-    <div class="modal-overlay" (click)="cerrarModal()">
-      <div class="modal" (click)="$event.stopPropagation()">
+  <!-- TAB: CATEGORÍAS -->
+  @if (pestanaActiva() === 'categorias') {
+  <div class="tab-content">
+    <div class="content-header">
+      <h2>Categorías</h2>
+      <button class="btn-primary" (click)="abrirModalNuevaCategoria()">
+        + Añadir Categoría
+      </button>
+    </div>
 
-        <div class="modal-header">
-          <h2>{{ modoEdicion() ? 'Editar Platillo' : 'Añadir Platillo' }}</h2>
-          <button class="btn-cerrar" (click)="cerrarModal()">✕</button>
+    <!-- Tabla de Categorías -->
+    <div class="tabla-container">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (categoria of categorias(); track categoria.id) {
+          <tr>
+            <td>{{ categoria.nombre }}</td>
+            <td>{{ categoria.descripcion || '-' }}</td>
+            <td class="acciones">
+              <button class="btn-icon" (click)="abrirModalEditarCategoria(categoria)" title="Editar">✏️</button>
+              <button class="btn-icon btn-danger" (click)="eliminarCategoria(categoria.id)" title="Eliminar">🗑️</button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  }
+
+  <!-- MODAL: PRODUCTO -->
+  @if (modalProductoAbierto()) {
+  <div class="modal-overlay" (click)="cerrarModalProducto()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ modoEdicionProducto() ? 'Editar Producto' : 'Añadir Producto' }}</h2>
+        <button class="btn-cerrar" (click)="cerrarModalProducto()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="campo">
+          <label>Nombre</label>
+          <input 
+            type="text" 
+            [value]="formProducto().nombre" 
+            (input)="setFormProducto('nombre', $any($event.target).value)"
+            [class.error]="erroresProducto()['nombre']"
+            placeholder="Ej: Pad Thai" />
+          @if (erroresProducto()['nombre']) {
+          <span class="error-msg">{{ erroresProducto()['nombre'] }}</span>
+          }
         </div>
 
-        <div class="modal-body">
-          <div class="campo">
-            <label>Nombre</label>
-            <input type="text" [value]="form().nombre"
-                   (input)="setForm('nombre', $any($event.target).value)"
-                   placeholder="Ej: Pad Thai" />
-          </div>
-
-          <div class="campo">
-            <label>Descripción (opcional)</label>
-            <input type="text" [value]="form().descripcion ?? ''"
-                   (input)="setForm('descripcion', $any($event.target).value)"
-                   placeholder="Descripción del platillo" />
-          </div>
-
-          <div class="campo">
-            <label>Precio</label>
-            <input type="number" [value]="form().precio"
-                   (input)="setForm('precio', $any($event.target).value)"
-                   placeholder="0.00" min="0" />
-          </div>
-
-          <div class="campo">
-            <label>Categoría</label>
-            <select [value]="form().categoria_id"
-                    (change)="setForm('categoria_id', $any($event.target).value)">
-              <option value="0" disabled>Selecciona una categoría</option>
-              @for (cat of categorias(); track cat.id) {
-                <option [value]="cat.id">{{ cat.nombre }}</option>
-              }
-            </select>
-          </div>
+        <div class="campo">
+          <label>Descripción (opcional)</label>
+          <input 
+            type="text" 
+            [value]="formProducto().descripcion ?? ''"
+            (input)="setFormProducto('descripcion', $any($event.target).value)" 
+            [class.error]="erroresProducto()['descripcion']"
+            placeholder="Descripción del producto" />
+          @if (erroresProducto()['descripcion']) {
+          <span class="error-msg">{{ erroresProducto()['descripcion'] }}</span>
+          }
         </div>
 
-        <div class="modal-footer">
-          <button class="btn-secundario" (click)="cerrarModal()">Cancelar</button>
-          <button class="btn-primary" (click)="guardar()">
-            {{ modoEdicion() ? 'Guardar Cambios' : 'Añadir' }}
-          </button>
+        <div class="campo">
+          <label>Precio</label>
+          <input 
+            type="number" 
+            [value]="formProducto().precio" 
+            (input)="setFormProducto('precio', $any($event.target).value)"
+            [class.error]="erroresProducto()['precio']"
+            placeholder="0.00" 
+            min="0" />
+          @if (erroresProducto()['precio']) {
+          <span class="error-msg">{{ erroresProducto()['precio'] }}</span>
+          }
         </div>
 
+        <div class="campo">
+          <label>Categoría</label>
+          <select 
+            [value]="formProducto().categoria_id" 
+            (change)="setFormProducto('categoria_id', $any($event.target).value)"
+            [class.error]="erroresProducto()['categoria_id']">
+            <option value="0" disabled>Selecciona una categoría</option>
+            @for (cat of categorias(); track cat.id) {
+            <option [value]="cat.id">{{ cat.nombre }}</option>
+            }
+          </select>
+          @if (erroresProducto()['categoria_id']) {
+          <span class="error-msg">{{ erroresProducto()['categoria_id'] }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secundario" (click)="cerrarModalProducto()" [disabled]="guardandoProducto()">Cancelar</button>
+        <button 
+          class="btn-primary" 
+          (click)="guardarProducto()"
+          [disabled]="!esFormularioProductoValido() || guardandoProducto()">
+          {{ guardandoProducto() ? 'Guardando...' : (modoEdicionProducto() ? 'Guardar Cambios' : 'Añadir') }}
+        </button>
       </div>
     </div>
+  </div>
+  }
+
+  <!-- MODAL: CATEGORÍA -->
+  @if (modalCategoriaAbierto()) {
+  <div class="modal-overlay" (click)="cerrarModalCategoria()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ modoEdicionCategoria() ? 'Editar Categoría' : 'Añadir Categoría' }}</h2>
+        <button class="btn-cerrar" (click)="cerrarModalCategoria()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="campo">
+          <label>Nombre</label>
+          <input 
+            type="text" 
+            [value]="formCategoria().nombre" 
+            (input)="setFormCategoria('nombre', $any($event.target).value)"
+            [class.error]="erroresCategoria()['nombre']"
+            placeholder="Ej: Bebidas" />
+          @if (erroresCategoria()['nombre']) {
+          <span class="error-msg">{{ erroresCategoria()['nombre'] }}</span>
+          }
+        </div>
+
+        <div class="campo">
+          <label>Descripción (opcional)</label>
+          <input 
+            type="text" 
+            [value]="formCategoria().descripcion ?? ''"
+            (input)="setFormCategoria('descripcion', $any($event.target).value)" 
+            [class.error]="erroresCategoria()['descripcion']"
+            placeholder="Descripción de la categoría" />
+          @if (erroresCategoria()['descripcion']) {
+          <span class="error-msg">{{ erroresCategoria()['descripcion'] }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secundario" (click)="cerrarModalCategoria()" [disabled]="guardandoCategoria()">Cancelar</button>
+        <button 
+          class="btn-primary" 
+          (click)="guardarCategoria()"
+          [disabled]="!esFormularioCategoriaValido() || guardandoCategoria()">
+          {{ guardandoCategoria() ? 'Guardando...' : (modoEdicionCategoria() ? 'Guardar Cambios' : 'Añadir') }}
+        </button>
+      </div>
+    </div>
+  </div>
   }
 
 </div>

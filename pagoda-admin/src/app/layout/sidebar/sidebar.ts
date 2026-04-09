@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../services/auth';
 
 interface NavItem {
   label: string;
@@ -14,10 +15,20 @@ interface NavItem {
   styleUrl: './sidebar.scss'
 })
 export class SidebarComponent {
+  private authService = inject(AuthService);
+  usuario = this.authService.usuario;
+
   navItems: NavItem[] = [
-    { label: 'Ventas',   route: '/ventas' },
-    { label: 'Top 5',    route: '/top5' },
-    { label: 'Menú',     route: '/menu' },
-    { label: 'Propinas', route: '/propinas' }
+    { label: 'Ventas',      route: '/ventas' },
+    { label: 'Top 5',       route: '/top5' },
+    { label: 'Menú',        route: '/menu' },
+    { label: 'Propinas',    route: '/propinas' },
+    { label: '👥 Usuarios',   route: '/usuarios' },
+    { label: '📁 Categorías', route: '/categorias' },
+    { label: '⚙️ Configuración', route: '/configuracion' }
   ];
+
+  logout() {
+    this.authService.logout();
+  }
 }

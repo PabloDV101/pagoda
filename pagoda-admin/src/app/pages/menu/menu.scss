@@ -30,8 +30,15 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s;
 
-  &:hover { background: #1f2937; }
+  &:hover:not(:disabled) { background: #1f2937; }
+
+  &:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 }
 
 .tabla-container {
@@ -156,12 +163,35 @@
     font-size: 15px;
     color: #111827;
     background: #fff;
+    transition: border-color 0.2s;
 
     &:focus {
       outline: none;
       border-color: #111827;
     }
+
+    &.error {
+      border-color: #dc2626;
+      background-color: #fef2f2;
+
+      &:focus {
+        border-color: #991b1b;
+      }
+    }
+
+    &:disabled {
+      background-color: #f3f4f6;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
   }
+}
+
+.error-msg {
+  font-size: 13px;
+  color: #dc2626;
+  font-weight: 500;
+  margin-top: 2px;
 }
 
 .modal-footer {
@@ -180,6 +210,172 @@
   border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
+  transition: background 0.2s;
 
-  &:hover { background: #f9fafb; }
+  &:hover:not(:disabled) { background: #f9fafb; }
+
+  &:disabled {
+    color: #9ca3af;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.estado-msg {
+  padding: 12px 16px;
+  font-size: 15px;
+  color: #6b7280;
+
+  &.error { color: #dc2626; }
+}
+
+// Tabs
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 24px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #374151;
+  }
+
+  &.active {
+    color: #111827;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #111827;
+    }
+  }
+}
+
+.tab-content {
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+  }
+}
+
+.btn-danger {
+  color: #dc2626;
+}
+
+// Filtros
+.filtros-contenedor {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  align-items: flex-end;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.filtro {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  input, select {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    color: #111827;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #111827;
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.05);
+    }
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+}
+
+.btn-limpiar {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #dc2626;
+  }
+
+  &:active {
+    background: #b91c1c;
+  }
+}
+
+.sin-resultados {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+  font-size: 16px;
 }

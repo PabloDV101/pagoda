@@ -22,6 +22,9 @@ public class Usuario {
     @Column(nullable = false)
     private String nombre;
 
+    @Column(name = "contrasena", nullable = true)
+    private String contrasena;
+
     @ManyToOne
     @JoinColumn(name = "rol_id", nullable = false)
     private Rol rol;

@@ -1,7 +1,6 @@
 <aside class="sidebar">
   <div class="brand">
     <span class="brand-name">Pagoda</span>
-    <span class="brand-sub">Sistema POS</span>
   </div>
   <nav>
     @for (item of navItems; track item.route) {
@@ -14,4 +13,15 @@
       </a>
     }
   </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">👤</div>
+      <div class="user-details">
+        <p class="user-name">{{ usuario() || 'Admin' }}</p>
+        <p class="user-role">Administrador</p>
+      </div>
+    </div>
+    <button class="btn-logout" (click)="logout()">🚪 Cerrar Sesión</button>
+  </div>
 </aside>

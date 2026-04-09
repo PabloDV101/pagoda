@@ -1,0 +1,72 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Pagoda</h1>
+      <p>Sistema de Administración</p>
+    </div>
+
+    <form (ngSubmit)="login()" class="login-form">
+      @if (error()) {
+      <div class="alert alert-error">
+        <span>{{ error() }}</span>
+      </div>
+      }
+
+      <div class="campo">
+        <label>Usuario</label>
+        <input
+          type="text"
+          [value]="usuario()"
+          (input)="setUsuario($any($event.target).value)"
+          [disabled]="cargando()"
+          placeholder="Ingresa tu usuario..."
+          autocomplete="username" />
+      </div>
+
+      <div class="campo">
+        <label>Contraseña</label>
+        <div class="input-grupo">
+          <input
+            [type]="mostrarContrasena() ? 'text' : 'password'"
+            [value]="contrasena()"
+            (input)="setContrasena($any($event.target).value)"
+            [disabled]="cargando()"
+            placeholder="Ingresa tu contraseña..."
+            autocomplete="current-password" />
+          <button
+            type="button"
+            class="btn-toggle-contrasena"
+            (click)="toggleMostrarContrasena()"
+            [disabled]="cargando()">
+            @if (mostrarContrasena()) {
+            👁️
+            } @else {
+            👁️‍🗨️
+            }
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="cargando()">
+        @if (cargando()) {
+        Iniciando sesión...
+        } @else {
+        Iniciar Sesión
+        }
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p class="texto-info">Usa tus credenciales de administrador para acceder</p>
+      <p class="credenciales-demo">
+        <small>Demo: usuario "<strong>admin</strong>" | contraseña "<strong>admin123</strong>"</small>
+      </p>
+    </div>
+  </div>
+
+  <div class="login-background">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+</div>

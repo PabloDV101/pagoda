@@ -1,0 +1,97 @@
+<div class="categorias">
+  @if (cargando()) {
+  <p class="estado-msg">Cargando categorías...</p>
+  }
+
+  @if (error()) {
+  <p class="estado-msg error">{{ error() }}</p>
+  }
+
+  <div class="page-header">
+    <div>
+      <h1>Gestión de Categorías</h1>
+      <p class="subtitulo">Organiza los productos de tu menú</p>
+    </div>
+    <button class="btn-primary" (click)="abrirModalNuevo()">
+      + Añadir Categoría
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="tabla-container">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (categoria of categorias(); track categoria.id) {
+        <tr>
+          <td>{{ categoria.nombre }}</td>
+          <td>{{ categoria.descripcion || '-' }}</td>
+          <td class="acciones">
+            <button class="btn-icon" (click)="abrirModalEditar(categoria)" title="Editar">✏️</button>
+            <button class="btn-icon btn-danger" (click)="eliminar(categoria.id)" title="Eliminar">🗑️</button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  @if (modalAbierto()) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2>{{ modoEdicion() ? 'Editar Categoría' : 'Añadir Categoría' }}</h2>
+        <button class="btn-cerrar" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="campo">
+          <label>Nombre</label>
+          <input 
+            type="text" 
+            [value]="form().nombre" 
+            (input)="setForm('nombre', $any($event.target).value)"
+            [class.error]="erroresValidacion()['nombre']"
+            placeholder="Ej: Bebidas" />
+          @if (erroresValidacion()['nombre']) {
+          <span class="error-msg">{{ erroresValidacion()['nombre'] }}</span>
+          }
+        </div>
+
+        <div class="campo">
+          <label>Descripción (opcional)</label>
+          <input 
+            type="text" 
+            [value]="form().descripcion ?? ''"
+            (input)="setForm('descripcion', $any($event.target).value)" 
+            [class.error]="erroresValidacion()['descripcion']"
+            placeholder="Descripción de la categoría" />
+          @if (erroresValidacion()['descripcion']) {
+          <span class="error-msg">{{ erroresValidacion()['descripcion'] }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secundario" (click)="cerrarModal()" [disabled]="guardando()">Cancelar</button>
+        <button 
+          class="btn-primary" 
+          (click)="guardar()"
+          [disabled]="!esFormularioValido() || guardando()">
+          {{ guardando() ? 'Guardando...' : (modoEdicion() ? 'Guardar Cambios' : 'Añadir') }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+  }
+
+</div>
