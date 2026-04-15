@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "backend"
+		},
+		{
+			"path": "pagoda-admin"
+		},
+		{
+			"path": "front"
+		}
+	],
+	"settings": {}
+}

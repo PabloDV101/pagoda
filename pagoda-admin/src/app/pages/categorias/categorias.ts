@@ -1,5 +1,5 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Categoria } from '../../models/index';
 import { CategoriasService } from '../../services/categorias';
@@ -7,11 +7,11 @@ import { CategoriasService } from '../../services/categorias';
 @Component({
   selector: 'app-categorias',
   standalone: true,
-  imports: [CurrencyPipe, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './categorias.html',
   styleUrl: './categorias.scss'
 })
-export class Categorias implements OnInit {
+export class CategoriasComponent implements OnInit {
   private categoriasService = inject(CategoriasService);
 
   categorias = signal<Categoria[]>([]);

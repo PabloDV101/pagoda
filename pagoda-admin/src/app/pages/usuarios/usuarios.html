@@ -125,7 +125,8 @@
           <label>
             <input
               type="checkbox"
-              [(ngModel)]="(form() as any).activo"
+              [checked]="activo()"
+              (change)="activo.set(!activo())"
               name="activo"
             />
             Usuario Activo

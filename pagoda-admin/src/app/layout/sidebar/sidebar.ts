@@ -24,7 +24,6 @@ export class SidebarComponent {
     { label: 'Menú',        route: '/menu' },
     { label: 'Propinas',    route: '/propinas' },
     { label: '👥 Usuarios',   route: '/usuarios' },
-    { label: '📁 Categorías', route: '/categorias' },
     { label: '⚙️ Configuración', route: '/configuracion' }
   ];
 

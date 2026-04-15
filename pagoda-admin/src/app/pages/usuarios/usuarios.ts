@@ -19,6 +19,7 @@ export class UsuariosComponent implements OnInit {
   cargando = signal(false);
   error = signal<string | null>(null);
   exito = signal<string | null>(null);
+  activo = signal(true);
 
   // Modal
   mostrarModal = signal(false);
@@ -30,8 +31,7 @@ export class UsuariosComponent implements OnInit {
     nombre: '',
     rolId: 0,
     pinHash: '',
-    contrasena: '',
-    activo: true
+    contrasena: ''
   });
 
   ngOnInit() {
@@ -68,16 +68,17 @@ export class UsuariosComponent implements OnInit {
     if (usuario) {
       this.editando.set(true);
       this.usuarioEditID.set(usuario.id);
+      this.activo.set(usuario.activo);
       this.form.set({
         nombre: usuario.nombre,
         rolId: 0, // Necesitaríamos mapear el nombre del rol al ID
         pinHash: '',
-        contrasena: '',
-        activo: usuario.activo
+        contrasena: ''
       });
     } else {
       this.editando.set(false);
       this.usuarioEditID.set(null);
+      this.activo.set(true);
       this.form.set({
         nombre: '',
         rolId: 0,
@@ -120,7 +121,7 @@ export class UsuariosComponent implements OnInit {
       rolId: f.rolId,
       pinHash: f.pinHash || '',
       contrasena: f.contrasena || undefined,
-      ...(this.editando() && { activo: (f as ActualizarUsuarioDTO).activo })
+      ...(this.editando() && { activo: this.activo() })
     };
 
     if (this.editando()) {
